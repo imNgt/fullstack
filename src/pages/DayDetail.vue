@@ -12,6 +12,7 @@ import {
 } from "@element-plus/icons-vue";
 import { getDayById, getCurrentStage } from "@/data/plan";
 import type { Day } from "@/data/plan";
+import { JavaCompiler } from "@/compiler/JavaCompiler";
 const props = defineProps<{
   day: number;
 }>();
@@ -37,110 +38,13 @@ const runCode = () => {
   codeExecuting.value = true;
   setTimeout(() => {
     try {
-      const output = executeWithRhino(javaContent.value);
+      const output = JavaCompiler.execute(javaContent.value);
       codeOutput.value = output;
     } catch (error) {
       codeOutput.value = `执行错误: ${error instanceof Error ? error.message : String(error)}`;
     }
     codeExecuting.value = false;
   }, 800);
-};
-
-const executeWithRhino = (javaCode: string): string => {
-  const outputs: string[] = [];
-
-  const systemOut = {
-    println: function (str: unknown) {
-      outputs.push(String(str));
-    },
-  };
-
-  const context = {
-    System: {
-      out: systemOut,
-    },
-  };
-
-  let code = javaCode;
-
-  code = code.replace(/\/\/.*$/gm, "");
-
-  code = code.replace(/public\s+class\s+\w+\s*\{/, "");
-
-  code = code.replace(
-    /public\s+static\s+void\s+main\s*\(\s*String\s*\[\s*\]\s+\w+\s*\)\s*\{/,
-    "",
-  );
-
-  code = code.replace(/\}\s*$/, "").replace(/\}\s*;\s*$/, "");
-
-  code = code.replace(/int\s+(\w+)\s*=/g, "let $1 =");
-  code = code.replace(/String\s+(\w+)\s*=/g, "let $1 =");
-  code = code.replace(/boolean\s+(\w+)\s*=/g, "let $1 =");
-  code = code.replace(/double\s+(\w+)\s*=/g, "let $1 =");
-  code = code.replace(/float\s+(\w+)\s*=/g, "let $1 =");
-  code = code.replace(/long\s+(\w+)\s*=/g, "let $1 =");
-  code = code.replace(/char\s+(\w+)\s*=/g, "let $1 =");
-
-  code = code.replace(/final\s+int\s+(\w+)\s*=/g, "const $1 =");
-  code = code.replace(/final\s+String\s+(\w+)\s*=/g, "const $1 =");
-  code = code.replace(/final\s+boolean\s+(\w+)\s*=/g, "const $1 =");
-
-  code = code.replace(
-    /for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*(\w+)\s*<\s*(\w+)\s*;\s*(\w+)\+\+\s*\)/g,
-    "for (let $1 = $2; $3 < $4; $5++)",
-  );
-
-  code = code.replace(
-    /for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*(\w+)\s*<=\s*(\w+)\s*;\s*(\w+)\+\+\s*\)/g,
-    "for (let $1 = $2; $1 <= $4; $1++)",
-  );
-
-  code = code.replace(
-    /while\s*\(\s*(\w+)\s*<\s*(\w+)\s*\)/g,
-    "while ($1 < $2)",
-  );
-
-  code = code.replace(/if\s*\(\s*(\w+)\s*==\s*(\w+)\s*\)/g, "if ($1 === $2)");
-  code = code.replace(/if\s*\(\s*(\w+)\s*!=\s*(\w+)\s*\)/g, "if ($1 !== $2)");
-  code = code.replace(/if\s*\(\s*(\w+)\s*>\s*(\w+)\s*\)/g, "if ($1 > $2)");
-  code = code.replace(/if\s*\(\s*(\w+)\s*>=\s*(\w+)\s*\)/g, "if ($1 >= $2)");
-  code = code.replace(/if\s*\(\s*(\w+)\s*<\s*(\w+)\s*\)/g, "if ($1 < $2)");
-  code = code.replace(/if\s*\(\s*(\w+)\s*<=\s*(\w+)\s*\)/g, "if ($1 <= $2)");
-  code = code.replace(/else\s+if/g, "else if");
-
-  code = code.replace(/else\s*\{/g, "else {");
-
-  code = code.replace(/(\w+)\+\+\s*;/g, "$1++;");
-  code = code.replace(/(\w+)\-\-\s*;/g, "$1--;");
-
-  code = code.replace(/String\.valueOf\s*\(([^)]+)\)/g, "String($1)");
-  code = code.replace(/Integer\.parseInt\s*\(([^)]+)\)/g, "parseInt($1)");
-  code = code.replace(/Double\.parseDouble\s*\(([^)]+)\)/g, "parseFloat($1)");
-
-  code = code.replace(/System\.out\.println\s*\(\s*/g, "System.out.println(");
-
-  code = code.replace(/\)\s*;/g, ");");
-
-  const wrappedCode = `
- const System = context.System;
- ${code}
- `;
-
-  try {
-    const func = new Function("context", wrappedCode);
-    func(context);
-  } catch (e) {
-    throw new Error(
-      `执行错误: ${e instanceof Error ? e.message : String(e)}\n\n提示：检查语法是否正确`,
-    );
-  }
-
-  if (outputs.length === 0) {
-    return "程序执行成功，但没有输出。\n\n提示：使用 System.out.println() 输出内容";
-  }
-
-  return outputs.join("\n") + "\n\n程序执行成功！";
 };
 const resetCode = () => {
   javaContent.value = `public class HelloWorld {
