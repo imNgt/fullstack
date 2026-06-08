@@ -1432,7 +1432,6 @@ export class JavaCompiler {
     console.log = (...args: unknown[]) => {
       outputs.push(args.map((arg) => String(arg)).join(" "));
     };
-
     try {
       const func = new Function(jsCode);
       func();
