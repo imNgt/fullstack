@@ -33,8 +33,8 @@ const todaySpringTopic = days[0]?.springTopic || ''
     <!-- 欢迎区域 -->
     <div class="hero-section">
       <div class="hero-content">
-        <h1>边学 Spring 边补 Java</h1>
-        <p class="hero-subtitle">45 天混合学习方案</p>
+        <h1>双轨并行：Spring 与 Java</h1>
+        <p class="hero-subtitle">45 天进阶学习方案</p>
         <p class="hero-desc">语法略懂、面向对象/集合稀里糊涂？用 Spring 倒逼补 Java，效率更高！</p>
         <div class="hero-stats">
           <div class="stat-item">
@@ -134,12 +134,12 @@ const todaySpringTopic = days[0]?.springTopic || ''
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #166534 0%, #15803d 40%, #22c55e 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #f093fb 100%);
   border-radius: 20px;
   padding: 50px;
   color: white;
   margin-bottom: 32px;
-  box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -250,13 +250,13 @@ const todaySpringTopic = days[0]?.springTopic || ''
 }
 
 .today-day {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
   padding: 6px 16px;
   border-radius: 25px;
   font-size: 15px;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .today-content {
@@ -276,7 +276,7 @@ const todaySpringTopic = days[0]?.springTopic || ''
 }
 
 .today-topic:hover {
-  background: #f0fdf4;
+  background: #f5f3ff;
   transform: translateX(5px);
 }
 
@@ -296,9 +296,9 @@ const todaySpringTopic = days[0]?.springTopic || ''
 }
 
 .topic-label.spring {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-  color: #166534;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+  color: #6d28d9;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
 }
 
 .topic-content {
@@ -312,7 +312,7 @@ const todaySpringTopic = days[0]?.springTopic || ''
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
   border: none;
   border-radius: 14px;
@@ -321,12 +321,12 @@ const todaySpringTopic = days[0]?.springTopic || ''
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.35);
 }
 
 .start-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(34, 197, 94, 0.45);
+  box-shadow: 0 12px 35px rgba(139, 92, 246, 0.45);
 }
 
 .start-btn:active {
@@ -361,15 +361,15 @@ const todaySpringTopic = days[0]?.springTopic || ''
 }
 
 .stage-tab:hover {
-  border-color: #22c55e;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15);
+  border-color: #8b5cf6;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
 }
 
 .stage-tab.active {
-  background: linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%);
-  border-color: #22c55e;
-  color: #166534;
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.2);
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border-color: #8b5cf6;
+  color: #6d28d9;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
   transform: translateY(-2px);
 }
 
@@ -415,7 +415,7 @@ const todaySpringTopic = days[0]?.springTopic || ''
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
   transform: scaleX(0);
   transition: transform 0.3s;
 }
@@ -426,7 +426,7 @@ const todaySpringTopic = days[0]?.springTopic || ''
 
 .day-card:hover {
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
-  border-color: #22c55e;
+  border-color: #8b5cf6;
   transform: translateY(-4px);
 }
 

@@ -37,26 +37,107 @@ const runCode = () => {
   codeExecuting.value = true;
   setTimeout(() => {
     try {
-      const output = executeJavaCode(javaContent.value);
+      const output = executeWithRhino(javaContent.value);
       codeOutput.value = output;
     } catch (error) {
-      codeOutput.value = `执行错误: ${error.message}`;
+      codeOutput.value = `执行错误: ${error instanceof Error ? error.message : String(error)}`;
     }
     codeExecuting.value = false;
   }, 800);
 };
 
-const executeJavaCode = (code: string): string => {
+const executeWithRhino = (javaCode: string): string => {
   const outputs: string[] = [];
 
-  const printPattern = /System\.out\.println\s*\(\s*["']([^"']+)["']\s*\)/g;
-  let match;
-  while ((match = printPattern.exec(code)) !== null) {
-    outputs.push(match[1]);
+  const systemOut = {
+    println: function (str: unknown) {
+      outputs.push(String(str));
+    },
+  };
+
+  const context = {
+    System: {
+      out: systemOut,
+    },
+  };
+
+  let code = javaCode;
+
+  code = code.replace(/\/\/.*$/gm, "");
+
+  code = code.replace(/public\s+class\s+\w+\s*\{/, "");
+
+  code = code.replace(
+    /public\s+static\s+void\s+main\s*\(\s*String\s*\[\s*\]\s+\w+\s*\)\s*\{/,
+    "",
+  );
+
+  code = code.replace(/\}\s*$/, "").replace(/\}\s*;\s*$/, "");
+
+  code = code.replace(/int\s+(\w+)\s*=/g, "let $1 =");
+  code = code.replace(/String\s+(\w+)\s*=/g, "let $1 =");
+  code = code.replace(/boolean\s+(\w+)\s*=/g, "let $1 =");
+  code = code.replace(/double\s+(\w+)\s*=/g, "let $1 =");
+  code = code.replace(/float\s+(\w+)\s*=/g, "let $1 =");
+  code = code.replace(/long\s+(\w+)\s*=/g, "let $1 =");
+  code = code.replace(/char\s+(\w+)\s*=/g, "let $1 =");
+
+  code = code.replace(/final\s+int\s+(\w+)\s*=/g, "const $1 =");
+  code = code.replace(/final\s+String\s+(\w+)\s*=/g, "const $1 =");
+  code = code.replace(/final\s+boolean\s+(\w+)\s*=/g, "const $1 =");
+
+  code = code.replace(
+    /for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*(\w+)\s*<\s*(\w+)\s*;\s*(\w+)\+\+\s*\)/g,
+    "for (let $1 = $2; $3 < $4; $5++)",
+  );
+
+  code = code.replace(
+    /for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*(\w+)\s*<=\s*(\w+)\s*;\s*(\w+)\+\+\s*\)/g,
+    "for (let $1 = $2; $1 <= $4; $1++)",
+  );
+
+  code = code.replace(
+    /while\s*\(\s*(\w+)\s*<\s*(\w+)\s*\)/g,
+    "while ($1 < $2)",
+  );
+
+  code = code.replace(/if\s*\(\s*(\w+)\s*==\s*(\w+)\s*\)/g, "if ($1 === $2)");
+  code = code.replace(/if\s*\(\s*(\w+)\s*!=\s*(\w+)\s*\)/g, "if ($1 !== $2)");
+  code = code.replace(/if\s*\(\s*(\w+)\s*>\s*(\w+)\s*\)/g, "if ($1 > $2)");
+  code = code.replace(/if\s*\(\s*(\w+)\s*>=\s*(\w+)\s*\)/g, "if ($1 >= $2)");
+  code = code.replace(/if\s*\(\s*(\w+)\s*<\s*(\w+)\s*\)/g, "if ($1 < $2)");
+  code = code.replace(/if\s*\(\s*(\w+)\s*<=\s*(\w+)\s*\)/g, "if ($1 <= $2)");
+  code = code.replace(/else\s+if/g, "else if");
+
+  code = code.replace(/else\s*\{/g, "else {");
+
+  code = code.replace(/(\w+)\+\+\s*;/g, "$1++;");
+  code = code.replace(/(\w+)\-\-\s*;/g, "$1--;");
+
+  code = code.replace(/String\.valueOf\s*\(([^)]+)\)/g, "String($1)");
+  code = code.replace(/Integer\.parseInt\s*\(([^)]+)\)/g, "parseInt($1)");
+  code = code.replace(/Double\.parseDouble\s*\(([^)]+)\)/g, "parseFloat($1)");
+
+  code = code.replace(/System\.out\.println\s*\(\s*/g, "System.out.println(");
+
+  code = code.replace(/\)\s*;/g, ");");
+
+  const wrappedCode = `
+ const System = context.System;
+ ${code}
+ `;
+
+  try {
+    const func = new Function("context", wrappedCode);
+    func(context);
+  } catch (e) {
+    throw new Error(
+      `执行错误: ${e instanceof Error ? e.message : String(e)}\n\n提示：检查语法是否正确`,
+    );
   }
 
   if (outputs.length === 0) {
-    return "没有找到 System.out.println 语句\n\n程序执行成功！";
+    return "程序执行成功，但没有输出。\n\n提示：使用 System.out.println() 输出内容";
   }
 
   return outputs.join("\n") + "\n\n程序执行成功！";
@@ -191,10 +272,10 @@ const resetCode = () => {
 }
 
 .back-btn:hover {
-  background: #f0fdf4;
-  border-color: #22c55e;
-  color: #166534;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15);
+  background: #f5f3ff;
+  border-color: #8b5cf6;
+  color: #6d28d9;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
   transform: translateX(-3px);
 }
 
@@ -214,13 +295,13 @@ const resetCode = () => {
 }
 
 .day-badge {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   color: white;
   padding: 8px 20px;
   border-radius: 25px;
   font-size: 15px;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .stage-label {
@@ -269,11 +350,11 @@ const resetCode = () => {
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, #ecfdf5 0%, #dcfce7 100%);
-  color: #166534;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  color: #6d28d9;
   font-weight: 600;
-  border-color: #22c55e;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+  border-color: #8b5cf6;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
 }
 
 .tab-icon {
@@ -308,7 +389,7 @@ const resetCode = () => {
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  border-left: 4px solid #22c55e;
+  border-left: 4px solid #8b5cf6;
   transition: all 0.3s;
 }
 
@@ -413,7 +494,7 @@ const resetCode = () => {
   gap: 10px;
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   border: none;
   border-radius: 0 0 16px 16px;
   color: white;
@@ -421,12 +502,12 @@ const resetCode = () => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .run-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
   transform: translateY(-1px);
 }
 
@@ -454,7 +535,7 @@ const resetCode = () => {
 }
 
 .output-content {
-  color: #22c55e;
+  color: #a78bfa;
   font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
   font-size: 14px;
   line-height: 1.6;

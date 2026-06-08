@@ -54,7 +54,7 @@ const navItems = [
   left: 0;
   right: 0;
   height: 64px;
-  background: linear-gradient(135deg, #166534 0%, #15803d 50%, #22c55e 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -196,7 +196,7 @@ const getStageProgress = (stageId: number) => {
 }
 
 .card-icon.green {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
 }
 
 .card-icon.orange {
@@ -252,7 +252,7 @@ const getStageProgress = (stageId: number) => {
 .progress-header span {
   font-size: 24px;
   font-weight: 700;
-  color: #22c55e;
+  color: #8b5cf6;
 }
 
 .progress-bar {
@@ -264,7 +264,7 @@ const getStageProgress = (stageId: number) => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   border-radius: 12px;
   transition: width 0.5s ease;
 }
@@ -308,7 +308,7 @@ const getStageProgress = (stageId: number) => {
 .stage-percent {
   font-size: 18px;
   font-weight: 600;
-  color: #22c55e;
+  color: #8b5cf6;
 }
 
 .stage-progress-card h3 {
@@ -334,7 +334,7 @@ const getStageProgress = (stageId: number) => {
 
 .stage-progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -368,13 +368,13 @@ const getStageProgress = (stageId: number) => {
 }
 
 .day-progress-card:hover {
-  border-color: #22c55e;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+  border-color: #8b5cf6;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
 
 .day-progress-card.completed {
-  background: #ecfdf5;
-  border-color: #22c55e;
+  background: #f5f3ff;
+  border-color: #8b5cf6;
 }
 
 .day-num {

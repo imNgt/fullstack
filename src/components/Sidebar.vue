@@ -90,13 +90,13 @@ const getDaysByStage = (stageId: number) => {
   font-weight: 700;
   color: #1f2937;
   font-size: 15px;
-  background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 100%);
+  background: linear-gradient(90deg, #f5f3ff 0%, #ede9fe 100%);
 }
 
 .sidebar-icon {
   width: 22px;
   height: 22px;
-  color: #22c55e;
+  color: #8b5cf6;
 }
 
 .sidebar-content {
@@ -128,8 +128,8 @@ const getDaysByStage = (stageId: number) => {
 }
 
 .stage-header:hover {
-  background: #f0fdf4;
-  color: #16a34a;
+  background: #f5f3ff;
+  color: #7c3aed;
   transform: translateX(4px);
 }
 
@@ -141,7 +141,7 @@ const getDaysByStage = (stageId: number) => {
 }
 
 .stage-header:hover .stage-icon {
-  color: #22c55e;
+  color: #8b5cf6;
 }
 
 .stage-title {
@@ -185,11 +185,11 @@ const getDaysByStage = (stageId: number) => {
 }
 
 .day-item.active {
-  background: linear-gradient(90deg, #ecfdf5 0%, #dcfce7 100%);
-  color: #166534;
-  border-left-color: #22c55e;
+  background: linear-gradient(90deg, #f5f3ff 0%, #ede9fe 100%);
+  color: #6d28d9;
+  border-left-color: #8b5cf6;
   font-weight: 500;
-  box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.1);
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.15);
 }
 
 .day-number {
