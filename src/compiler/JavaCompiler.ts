@@ -1,53 +1,53 @@
 export enum TokenType {
-  CLASS = 'CLASS',
-  PUBLIC = 'PUBLIC',
-  STATIC = 'STATIC',
-  VOID = 'VOID',
-  MAIN = 'MAIN',
-  INT = 'INT',
-  STRING = 'STRING',
-  BOOLEAN = 'BOOLEAN',
-  DOUBLE = 'DOUBLE',
-  FLOAT = 'FLOAT',
-  LONG = 'LONG',
-  CHAR = 'CHAR',
-  IF = 'IF',
-  ELSE = 'ELSE',
-  WHILE = 'WHILE',
-  FOR = 'FOR',
-  RETURN = 'RETURN',
-  FINAL = 'FINAL',
-  IDENTIFIER = 'IDENTIFIER',
-  INTEGER_LITERAL = 'INTEGER_LITERAL',
-  STRING_LITERAL = 'STRING_LITERAL',
-  BOOLEAN_LITERAL = 'BOOLEAN_LITERAL',
-  ASSIGN = 'ASSIGN',
-  PLUS = 'PLUS',
-  MINUS = 'MINUS',
-  MULTIPLY = 'MULTIPLY',
-  DIVIDE = 'DIVIDE',
-  MOD = 'MOD',
-  PLUS_PLUS = 'PLUS_PLUS',
-  MINUS_MINUS = 'MINUS_MINUS',
-  EQUAL = 'EQUAL',
-  NOT_EQUAL = 'NOT_EQUAL',
-  LESS_THAN = 'LESS_THAN',
-  GREATER_THAN = 'GREATER_THAN',
-  LESS_EQUAL = 'LESS_EQUAL',
-  GREATER_EQUAL = 'GREATER_EQUAL',
-  AND = 'AND',
-  OR = 'OR',
-  NOT = 'NOT',
-  LPAREN = 'LPAREN',
-  RPAREN = 'RPAREN',
-  LBRACE = 'LBRACE',
-  RBRACE = 'RBRACE',
-  LBRACKET = 'LBRACKET',
-  RBRACKET = 'RBRACKET',
-  SEMICOLON = 'SEMICOLON',
-  COMMA = 'COMMA',
-  DOT = 'DOT',
-  EOF = 'EOF',
+  CLASS = "CLASS",
+  PUBLIC = "PUBLIC",
+  STATIC = "STATIC",
+  VOID = "VOID",
+  MAIN = "MAIN",
+  INT = "INT",
+  STRING = "STRING",
+  BOOLEAN = "BOOLEAN",
+  DOUBLE = "DOUBLE",
+  FLOAT = "FLOAT",
+  LONG = "LONG",
+  CHAR = "CHAR",
+  IF = "IF",
+  ELSE = "ELSE",
+  WHILE = "WHILE",
+  FOR = "FOR",
+  RETURN = "RETURN",
+  FINAL = "FINAL",
+  IDENTIFIER = "IDENTIFIER",
+  INTEGER_LITERAL = "INTEGER_LITERAL",
+  STRING_LITERAL = "STRING_LITERAL",
+  BOOLEAN_LITERAL = "BOOLEAN_LITERAL",
+  ASSIGN = "ASSIGN",
+  PLUS = "PLUS",
+  MINUS = "MINUS",
+  MULTIPLY = "MULTIPLY",
+  DIVIDE = "DIVIDE",
+  MOD = "MOD",
+  PLUS_PLUS = "PLUS_PLUS",
+  MINUS_MINUS = "MINUS_MINUS",
+  EQUAL = "EQUAL",
+  NOT_EQUAL = "NOT_EQUAL",
+  LESS_THAN = "LESS_THAN",
+  GREATER_THAN = "GREATER_THAN",
+  LESS_EQUAL = "LESS_EQUAL",
+  GREATER_EQUAL = "GREATER_EQUAL",
+  AND = "AND",
+  OR = "OR",
+  NOT = "NOT",
+  LPAREN = "LPAREN",
+  RPAREN = "RPAREN",
+  LBRACE = "LBRACE",
+  RBRACE = "RBRACE",
+  LBRACKET = "LBRACKET",
+  RBRACKET = "RBRACKET",
+  SEMICOLON = "SEMICOLON",
+  COMMA = "COMMA",
+  DOT = "DOT",
+  EOF = "EOF",
 }
 
 export interface Token {
@@ -69,7 +69,7 @@ export class Lexer {
     this.position = 0;
     this.line = 1;
     this.column = 1;
-    this._currentChar = source[0] || '';
+    this._currentChar = source[0] || "";
   }
 
   private get currentChar(): string {
@@ -84,15 +84,15 @@ export class Lexer {
     this.position++;
     this.column++;
     if (this.position >= this.source.length) {
-      this.currentChar = '';
+      this.currentChar = "";
     } else {
       this.currentChar = this.source[this.position];
     }
   }
 
   private skipWhitespace(): void {
-    while (this.currentChar !== '' && /\s/.test(this.currentChar)) {
-      if (this.currentChar === '\n') {
+    while (this.currentChar !== "" && /\s/.test(this.currentChar)) {
+      if (this.currentChar === "\n") {
         this.line++;
         this.column = 1;
       }
@@ -103,23 +103,23 @@ export class Lexer {
   private skipComment(): void {
     const currentChar = this.currentChar;
     const peekChar = this.peek();
-    
-    if (currentChar === '/' && peekChar === '/') {
-      while (this.currentChar !== '' && this.currentChar !== '\n') {
+
+    if (currentChar === "/" && peekChar === "/") {
+      while (this.currentChar !== "" && this.currentChar !== "\n") {
         this.advance();
       }
-    } else if (currentChar === '/' && peekChar === '*') {
+    } else if (currentChar === "/" && peekChar === "*") {
       this.advance();
       this.advance();
-      while (this.currentChar !== '') {
+      while (this.currentChar !== "") {
         const c = this.currentChar;
         const p = this.peek();
-        if (c === '*' && p === '/') {
+        if (c === "*" && p === "/") {
           this.advance();
           this.advance();
           break;
         }
-        if (c === '\n') {
+        if (c === "\n") {
           this.line++;
           this.column = 1;
         }
@@ -129,7 +129,7 @@ export class Lexer {
   }
 
   private peek(): string {
-    return this.source[this.position + 1] || '';
+    return this.source[this.position + 1] || "";
   }
 
   private isLetter(): boolean {
@@ -141,12 +141,12 @@ export class Lexer {
   }
 
   private readIdentifier(): string {
-    let result = '';
+    let result = "";
     const currentChar = this.currentChar;
-    if (currentChar !== '' && (this.isLetter() || this.isDigit())) {
+    if (currentChar !== "" && (this.isLetter() || this.isDigit())) {
       result += currentChar;
       this.advance();
-      while (this.currentChar !== '' && (this.isLetter() || this.isDigit())) {
+      while (this.currentChar !== "" && (this.isLetter() || this.isDigit())) {
         result += this.currentChar;
         this.advance();
       }
@@ -155,21 +155,21 @@ export class Lexer {
   }
 
   private readNumber(): string {
-    let result = '';
+    let result = "";
     const currentChar = this.currentChar;
-    if (currentChar !== '' && this.isDigit()) {
+    if (currentChar !== "" && this.isDigit()) {
       result += currentChar;
       this.advance();
-      while (this.currentChar !== '' && this.isDigit()) {
+      while (this.currentChar !== "" && this.isDigit()) {
         result += this.currentChar;
         this.advance();
       }
     }
     const charAfterNumber = this.currentChar;
-    if (charAfterNumber === '.' && this.isDigit()) {
-      result += '.';
+    if (charAfterNumber === "." && this.isDigit()) {
+      result += ".";
       this.advance();
-      while (this.currentChar !== '' && this.isDigit()) {
+      while (this.currentChar !== "" && this.isDigit()) {
         result += this.currentChar;
         this.advance();
       }
@@ -178,15 +178,15 @@ export class Lexer {
   }
 
   private readString(): string {
-    let result = '';
+    let result = "";
     this.advance();
-    while (this.currentChar !== '' && this.currentChar !== '"') {
-      if (this.currentChar === '\\') {
+    while (this.currentChar !== "" && this.currentChar !== '"') {
+      if (this.currentChar === "\\") {
         this.advance();
         const c = this.currentChar as string;
-        if (c === 'n') result += '\n';
-        else if (c === 't') result += '\t';
-        else if (c === '\\') result += '\\';
+        if (c === "n") result += "\n";
+        else if (c === "t") result += "\t";
+        else if (c === "\\") result += "\\";
         else if (c === '"') result += '"';
         else result += c;
       } else {
@@ -202,13 +202,13 @@ export class Lexer {
     const tokenLine = this.line;
     const tokenColumn = this.column;
 
-    while (this.currentChar !== '') {
+    while (this.currentChar !== "") {
       if (/[\s]/.test(this.currentChar)) {
         this.skipWhitespace();
         continue;
       }
 
-      if (this.currentChar === '/') {
+      if (this.currentChar === "/") {
         this.skipComment();
         continue;
       }
@@ -220,7 +220,6 @@ export class Lexer {
           public: TokenType.PUBLIC,
           static: TokenType.STATIC,
           void: TokenType.VOID,
-          main: TokenType.MAIN,
           int: TokenType.INT,
           String: TokenType.STRING,
           boolean: TokenType.BOOLEAN,
@@ -264,155 +263,302 @@ export class Lexer {
       }
 
       switch (this.currentChar) {
-        case '=': {
+        case "=": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '=') {
+          if (c === "=") {
             this.advance();
-            return { type: TokenType.EQUAL, value: '==', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.EQUAL,
+              value: "==",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.ASSIGN, value: '=', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.ASSIGN,
+            value: "=",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '!': {
+        case "!": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '=') {
+          if (c === "=") {
             this.advance();
-            return { type: TokenType.NOT_EQUAL, value: '!=', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.NOT_EQUAL,
+              value: "!=",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.NOT, value: '!', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.NOT,
+            value: "!",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '<': {
+        case "<": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '=') {
+          if (c === "=") {
             this.advance();
-            return { type: TokenType.LESS_EQUAL, value: '<=', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.LESS_EQUAL,
+              value: "<=",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.LESS_THAN, value: '<', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.LESS_THAN,
+            value: "<",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '>': {
+        case ">": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '=') {
+          if (c === "=") {
             this.advance();
-            return { type: TokenType.GREATER_EQUAL, value: '>=', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.GREATER_EQUAL,
+              value: ">=",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.GREATER_THAN, value: '>', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.GREATER_THAN,
+            value: ">",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '+': {
+        case "+": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '+') {
+          if (c === "+") {
             this.advance();
-            return { type: TokenType.PLUS_PLUS, value: '++', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.PLUS_PLUS,
+              value: "++",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.PLUS, value: '+', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.PLUS,
+            value: "+",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '-': {
+        case "-": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '-') {
+          if (c === "-") {
             this.advance();
-            return { type: TokenType.MINUS_MINUS, value: '--', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.MINUS_MINUS,
+              value: "--",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.MINUS, value: '-', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.MINUS,
+            value: "-",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '*': {
+        case "*": {
           this.advance();
-          return { type: TokenType.MULTIPLY, value: '*', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.MULTIPLY,
+            value: "*",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '/': {
+        case "/": {
           this.advance();
-          return { type: TokenType.DIVIDE, value: '/', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.DIVIDE,
+            value: "/",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '%': {
+        case "%": {
           this.advance();
-          return { type: TokenType.MOD, value: '%', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.MOD,
+            value: "%",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '&': {
+        case "&": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '&') {
+          if (c === "&") {
             this.advance();
-            return { type: TokenType.AND, value: '&&', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.AND,
+              value: "&&",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.IDENTIFIER, value: '&', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.IDENTIFIER,
+            value: "&",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '|': {
+        case "|": {
           this.advance();
           const c = this.currentChar as string;
-          if (c === '|') {
+          if (c === "|") {
             this.advance();
-            return { type: TokenType.OR, value: '||', line: tokenLine, column: tokenColumn };
+            return {
+              type: TokenType.OR,
+              value: "||",
+              line: tokenLine,
+              column: tokenColumn,
+            };
           }
-          return { type: TokenType.IDENTIFIER, value: '|', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.IDENTIFIER,
+            value: "|",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '(': {
+        case "(": {
           this.advance();
-          return { type: TokenType.LPAREN, value: '(', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.LPAREN,
+            value: "(",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case ')': {
+        case ")": {
           this.advance();
-          return { type: TokenType.RPAREN, value: ')', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.RPAREN,
+            value: ")",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '{': {
+        case "{": {
           this.advance();
-          return { type: TokenType.LBRACE, value: '{', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.LBRACE,
+            value: "{",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '}': {
+        case "}": {
           this.advance();
-          return { type: TokenType.RBRACE, value: '}', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.RBRACE,
+            value: "}",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '[': {
+        case "[": {
           this.advance();
-          return { type: TokenType.LBRACKET, value: '[', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.LBRACKET,
+            value: "[",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case ']': {
+        case "]": {
           this.advance();
-          return { type: TokenType.RBRACKET, value: ']', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.RBRACKET,
+            value: "]",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case ';': {
+        case ";": {
           this.advance();
-          return { type: TokenType.SEMICOLON, value: ';', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.SEMICOLON,
+            value: ";",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case ',': {
+        case ",": {
           this.advance();
-          return { type: TokenType.COMMA, value: ',', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.COMMA,
+            value: ",",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
-        case '.': {
+        case ".": {
           this.advance();
-          return { type: TokenType.DOT, value: '.', line: tokenLine, column: tokenColumn };
+          return {
+            type: TokenType.DOT,
+            value: ".",
+            line: tokenLine,
+            column: tokenColumn,
+          };
         }
 
         default: {
           const unknown = this.currentChar;
           this.advance();
-          throw new Error(`未知字符: ${unknown} 在第 ${tokenLine} 行, 第 ${tokenColumn} 列`);
+          throw new Error(
+            `未知字符: ${unknown} 在第 ${tokenLine} 行, 第 ${tokenColumn} 列`,
+          );
         }
       }
     }
 
-    return { type: TokenType.EOF, value: '', line: tokenLine, column: tokenColumn };
+    return {
+      type: TokenType.EOF,
+      value: "",
+      line: tokenLine,
+      column: tokenColumn,
+    };
   }
 
   tokenize(): Token[] {
@@ -441,7 +587,7 @@ export type ASTNode =
   | PrintNode;
 
 export class ClassNode {
-  type = 'CLASS' as const;
+  type = "CLASS" as const;
   name: string;
   methods: MethodNode[];
 
@@ -452,12 +598,16 @@ export class ClassNode {
 }
 
 export class MethodNode {
-  type = 'METHOD' as const;
+  type = "METHOD" as const;
   name: string;
   parameters: { type: string; name: string }[];
   body: StatementNode[];
 
-  constructor(name: string, parameters: { type: string; name: string }[], body: StatementNode[]) {
+  constructor(
+    name: string,
+    parameters: { type: string; name: string }[],
+    body: StatementNode[],
+  ) {
     this.name = name;
     this.parameters = parameters;
     this.body = body;
@@ -465,13 +615,18 @@ export class MethodNode {
 }
 
 export class VariableDeclNode {
-  type = 'VARIABLE_DECL' as const;
+  type = "VARIABLE_DECL" as const;
   typeName: string;
   name: string;
   value?: ExpressionNode;
   isFinal: boolean;
 
-  constructor(typeName: string, name: string, value?: ExpressionNode, isFinal = false) {
+  constructor(
+    typeName: string,
+    name: string,
+    value?: ExpressionNode,
+    isFinal = false,
+  ) {
     this.typeName = typeName;
     this.name = name;
     this.value = value;
@@ -480,7 +635,7 @@ export class VariableDeclNode {
 }
 
 export class AssignmentNode {
-  type = 'ASSIGNMENT' as const;
+  type = "ASSIGNMENT" as const;
   name: string;
   value: ExpressionNode;
 
@@ -491,7 +646,7 @@ export class AssignmentNode {
 }
 
 export class ExpressionNode {
-  type: 'BINARY_EXPR' | 'UNARY_EXPR' | 'LITERAL' | 'IDENTIFIER' | 'METHOD_CALL';
+  type: "BINARY_EXPR" | "UNARY_EXPR" | "LITERAL" | "IDENTIFIER" | "METHOD_CALL";
   left?: ExpressionNode;
   right?: ExpressionNode;
   operator?: string;
@@ -499,7 +654,14 @@ export class ExpressionNode {
   name?: string;
   args?: ExpressionNode[];
 
-  constructor(type: 'BINARY_EXPR' | 'UNARY_EXPR' | 'LITERAL' | 'IDENTIFIER' | 'METHOD_CALL') {
+  constructor(
+    type:
+      | "BINARY_EXPR"
+      | "UNARY_EXPR"
+      | "LITERAL"
+      | "IDENTIFIER"
+      | "METHOD_CALL",
+  ) {
     this.type = type;
   }
 }
@@ -515,12 +677,16 @@ export type StatementNode =
   | ExpressionNode;
 
 export class IfNode {
-  type = 'IF' as const;
+  type = "IF" as const;
   condition: ExpressionNode;
   thenBranch: StatementNode[];
   elseBranch?: StatementNode[];
 
-  constructor(condition: ExpressionNode, thenBranch: StatementNode[], elseBranch?: StatementNode[]) {
+  constructor(
+    condition: ExpressionNode,
+    thenBranch: StatementNode[],
+    elseBranch?: StatementNode[],
+  ) {
     this.condition = condition;
     this.thenBranch = thenBranch;
     this.elseBranch = elseBranch;
@@ -528,7 +694,7 @@ export class IfNode {
 }
 
 export class WhileNode {
-  type = 'WHILE' as const;
+  type = "WHILE" as const;
   condition: ExpressionNode;
   body: StatementNode[];
 
@@ -539,7 +705,7 @@ export class WhileNode {
 }
 
 export class ForNode {
-  type = 'FOR' as const;
+  type = "FOR" as const;
   init?: VariableDeclNode | AssignmentNode;
   condition?: ExpressionNode;
   update?: ExpressionNode;
@@ -559,7 +725,7 @@ export class ForNode {
 }
 
 export class PrintNode {
-  type = 'PRINT' as const;
+  type = "PRINT" as const;
   expression: ExpressionNode;
 
   constructor(expression: ExpressionNode) {
@@ -568,7 +734,7 @@ export class PrintNode {
 }
 
 export class ReturnNode {
-  type = 'RETURN' as const;
+  type = "RETURN" as const;
   value?: ExpressionNode;
 
   constructor(value?: ExpressionNode) {
@@ -606,7 +772,14 @@ export class Parser {
   }
 
   private peek(): Token {
-    return this.tokens[this.position + 1] || { type: TokenType.EOF, value: '', line: 0, column: 0 };
+    return (
+      this.tokens[this.position + 1] || {
+        type: TokenType.EOF,
+        value: "",
+        line: 0,
+        column: 0,
+      }
+    );
   }
 
   parse(): ClassNode {
@@ -641,7 +814,7 @@ export class Parser {
       this.eat(TokenType.LBRACKET);
       this.eat(TokenType.RBRACKET);
       const paramName = this.eat(TokenType.IDENTIFIER).value;
-      parameters.push({ type: 'String[]', name: paramName });
+      parameters.push({ type: "String[]", name: paramName });
     }
     this.eat(TokenType.RPAREN);
 
@@ -654,7 +827,10 @@ export class Parser {
 
   private parseStatements(): StatementNode[] {
     const statements: StatementNode[] = [];
-    while (this.currentToken.type !== TokenType.RBRACE && this.currentToken.type !== TokenType.EOF) {
+    while (
+      this.currentToken.type !== TokenType.RBRACE &&
+      this.currentToken.type !== TokenType.EOF
+    ) {
       statements.push(this.parseStatement());
     }
     return statements;
@@ -662,15 +838,17 @@ export class Parser {
 
   private parseStatement(): StatementNode {
     const tokenType = this.currentToken.type;
-    
-    if (tokenType === TokenType.FINAL ||
-        tokenType === TokenType.INT ||
-        tokenType === TokenType.STRING ||
-        tokenType === TokenType.BOOLEAN ||
-        tokenType === TokenType.DOUBLE ||
-        tokenType === TokenType.FLOAT ||
-        tokenType === TokenType.LONG ||
-        tokenType === TokenType.CHAR) {
+
+    if (
+      tokenType === TokenType.FINAL ||
+      tokenType === TokenType.INT ||
+      tokenType === TokenType.STRING ||
+      tokenType === TokenType.BOOLEAN ||
+      tokenType === TokenType.DOUBLE ||
+      tokenType === TokenType.FLOAT ||
+      tokenType === TokenType.LONG ||
+      tokenType === TokenType.CHAR
+    ) {
       return this.parseVariableDecl();
     }
 
@@ -678,7 +856,10 @@ export class Parser {
       const nextType = this.peek().type;
       if (nextType === TokenType.ASSIGN) {
         return this.parseAssignment();
-      } else if (nextType === TokenType.PLUS_PLUS || nextType === TokenType.MINUS_MINUS) {
+      } else if (
+        nextType === TokenType.PLUS_PLUS ||
+        nextType === TokenType.MINUS_MINUS
+      ) {
         return this.parseIncrement();
       }
       return this.parseExpression();
@@ -698,6 +879,13 @@ export class Parser {
 
     if (tokenType === TokenType.RETURN) {
       return this.parseReturn();
+    }
+
+    if (tokenType === TokenType.SEMICOLON) {
+      this.eat(TokenType.SEMICOLON);
+      const expr = new ExpressionNode("LITERAL");
+      expr.value = "";
+      return expr;
     }
 
     return this.parseExpression();
@@ -733,10 +921,10 @@ export class Parser {
     const operator = this.eat(this.currentToken.type).value;
     this.eat(TokenType.SEMICOLON);
 
-    const expr = new ExpressionNode('IDENTIFIER');
+    const expr = new ExpressionNode("IDENTIFIER");
     expr.name = name;
 
-    const unary = new ExpressionNode('UNARY_EXPR');
+    const unary = new ExpressionNode("UNARY_EXPR");
     unary.operator = operator;
     unary.right = expr;
 
@@ -756,7 +944,7 @@ export class Parser {
     if (this.currentToken.type === TokenType.ELSE) {
       this.eat(TokenType.ELSE);
       const peekType = this.currentToken.type;
-      if (peekType === TokenType.IF as TokenType) {
+      if (peekType === (TokenType.IF as TokenType)) {
         elseBranch = [this.parseIf()];
       } else {
         this.eat(TokenType.LBRACE);
@@ -850,7 +1038,7 @@ export class Parser {
     while (this.currentToken.type === TokenType.OR) {
       const operator = this.eat(TokenType.OR).value;
       const right = this.parseLogicalAnd();
-      const expr = new ExpressionNode('BINARY_EXPR');
+      const expr = new ExpressionNode("BINARY_EXPR");
       expr.left = left;
       expr.operator = operator;
       expr.right = right;
@@ -864,7 +1052,7 @@ export class Parser {
     while (this.currentToken.type === TokenType.AND) {
       const operator = this.eat(TokenType.AND).value;
       const right = this.parseEquality();
-      const expr = new ExpressionNode('BINARY_EXPR');
+      const expr = new ExpressionNode("BINARY_EXPR");
       expr.left = left;
       expr.operator = operator;
       expr.right = right;
@@ -875,10 +1063,13 @@ export class Parser {
 
   private parseEquality(): ExpressionNode {
     let left = this.parseRelational();
-    while (this.currentToken.type === TokenType.EQUAL || this.currentToken.type === TokenType.NOT_EQUAL) {
+    while (
+      this.currentToken.type === TokenType.EQUAL ||
+      this.currentToken.type === TokenType.NOT_EQUAL
+    ) {
       const operator = this.eat(this.currentToken.type).value;
       const right = this.parseRelational();
-      const expr = new ExpressionNode('BINARY_EXPR');
+      const expr = new ExpressionNode("BINARY_EXPR");
       expr.left = left;
       expr.operator = operator;
       expr.right = right;
@@ -889,10 +1080,17 @@ export class Parser {
 
   private parseRelational(): ExpressionNode {
     let left = this.parseAdditive();
-    while ([TokenType.LESS_THAN, TokenType.GREATER_THAN, TokenType.LESS_EQUAL, TokenType.GREATER_EQUAL].includes(this.currentToken.type)) {
+    while (
+      [
+        TokenType.LESS_THAN,
+        TokenType.GREATER_THAN,
+        TokenType.LESS_EQUAL,
+        TokenType.GREATER_EQUAL,
+      ].includes(this.currentToken.type)
+    ) {
       const operator = this.eat(this.currentToken.type).value;
       const right = this.parseAdditive();
-      const expr = new ExpressionNode('BINARY_EXPR');
+      const expr = new ExpressionNode("BINARY_EXPR");
       expr.left = left;
       expr.operator = operator;
       expr.right = right;
@@ -903,10 +1101,13 @@ export class Parser {
 
   private parseAdditive(): ExpressionNode {
     let left = this.parseMultiplicative();
-    while (this.currentToken.type === TokenType.PLUS || this.currentToken.type === TokenType.MINUS) {
+    while (
+      this.currentToken.type === TokenType.PLUS ||
+      this.currentToken.type === TokenType.MINUS
+    ) {
       const operator = this.eat(this.currentToken.type).value;
       const right = this.parseMultiplicative();
-      const expr = new ExpressionNode('BINARY_EXPR');
+      const expr = new ExpressionNode("BINARY_EXPR");
       expr.left = left;
       expr.operator = operator;
       expr.right = right;
@@ -917,10 +1118,14 @@ export class Parser {
 
   private parseMultiplicative(): ExpressionNode {
     let left = this.parseUnary();
-    while ([TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.MOD].includes(this.currentToken.type)) {
+    while (
+      [TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.MOD].includes(
+        this.currentToken.type,
+      )
+    ) {
       const operator = this.eat(this.currentToken.type).value;
       const right = this.parseUnary();
-      const expr = new ExpressionNode('BINARY_EXPR');
+      const expr = new ExpressionNode("BINARY_EXPR");
       expr.left = left;
       expr.operator = operator;
       expr.right = right;
@@ -930,9 +1135,12 @@ export class Parser {
   }
 
   private parseUnary(): ExpressionNode {
-    if (this.currentToken.type === TokenType.NOT || this.currentToken.type === TokenType.MINUS) {
+    if (
+      this.currentToken.type === TokenType.NOT ||
+      this.currentToken.type === TokenType.MINUS
+    ) {
       const operator = this.eat(this.currentToken.type).value;
-      const expr = new ExpressionNode('UNARY_EXPR');
+      const expr = new ExpressionNode("UNARY_EXPR");
       expr.operator = operator;
       expr.right = this.parseUnary();
       return expr;
@@ -942,7 +1150,7 @@ export class Parser {
 
   private parsePrimary(): ExpressionNode {
     const tokenType = this.currentToken.type;
-    
+
     if (tokenType === TokenType.LPAREN) {
       this.eat(TokenType.LPAREN);
       const expr = this.parseExpression();
@@ -951,9 +1159,15 @@ export class Parser {
     }
 
     if (tokenType === TokenType.IDENTIFIER) {
-      const name = this.eat(TokenType.IDENTIFIER).value;
+      let name = this.eat(TokenType.IDENTIFIER).value;
+
+      while (this.currentToken.type === TokenType.DOT) {
+        this.eat(TokenType.DOT);
+        name += "." + this.eat(TokenType.IDENTIFIER).value;
+      }
+
       const nextToken = this.currentToken;
-      
+
       if (nextToken.type === TokenType.LPAREN) {
         this.eat(TokenType.LPAREN);
         const args: ExpressionNode[] = [];
@@ -965,22 +1179,24 @@ export class Parser {
           }
         }
         this.eat(TokenType.RPAREN);
-        
-        const call = new ExpressionNode('METHOD_CALL');
+
+        const call = new ExpressionNode("METHOD_CALL");
         call.name = name;
         call.args = args;
         return call;
       }
 
-      const expr = new ExpressionNode('IDENTIFIER');
+      const expr = new ExpressionNode("IDENTIFIER");
       expr.name = name;
       return expr;
     }
 
-    if (tokenType === TokenType.INTEGER_LITERAL || 
-        tokenType === TokenType.STRING_LITERAL || 
-        tokenType === TokenType.BOOLEAN_LITERAL) {
-      const literal = new ExpressionNode('LITERAL');
+    if (
+      tokenType === TokenType.INTEGER_LITERAL ||
+      tokenType === TokenType.STRING_LITERAL ||
+      tokenType === TokenType.BOOLEAN_LITERAL
+    ) {
+      const literal = new ExpressionNode("LITERAL");
       literal.value = this.eat(tokenType).value;
       return literal;
     }
@@ -999,98 +1215,98 @@ export class CodeGenerator {
 
     this.visitClass(ast);
 
-    return { jsCode: this.code.join('\n') };
+    return { jsCode: this.code.join("\n") };
   }
 
   private visitClass(node: ClassNode): void {
-    node.methods.forEach(method => {
-      if (method.name === 'main') {
+    node.methods.forEach((method) => {
+      if (method.name === "main") {
         this.visitMethod(method);
       }
     });
   }
 
   private visitMethod(node: MethodNode): void {
-    node.body.forEach(stmt => this.visitStatement(stmt));
+    node.body.forEach((stmt) => this.visitStatement(stmt));
   }
 
   private visitStatement(node: StatementNode): void {
     switch (node.type) {
-      case 'VARIABLE_DECL':
+      case "VARIABLE_DECL":
         this.visitVariableDecl(node);
         break;
-      case 'ASSIGNMENT':
+      case "ASSIGNMENT":
         this.visitAssignment(node);
         break;
-      case 'IF':
+      case "IF":
         this.visitIf(node);
         break;
-      case 'WHILE':
+      case "WHILE":
         this.visitWhile(node);
         break;
-      case 'FOR':
+      case "FOR":
         this.visitFor(node);
         break;
-      case 'PRINT':
+      case "PRINT":
         this.visitPrint(node);
         break;
-      case 'RETURN':
+      case "RETURN":
         this.visitReturn(node);
         break;
-      case 'BINARY_EXPR':
-      case 'UNARY_EXPR':
-      case 'IDENTIFIER':
-      case 'METHOD_CALL':
-      case 'LITERAL':
+      case "BINARY_EXPR":
+      case "UNARY_EXPR":
+      case "IDENTIFIER":
+      case "METHOD_CALL":
+      case "LITERAL":
         this.visitExpression(node);
-        this.write(';');
+        this.write(";");
         break;
     }
   }
 
   private visitVariableDecl(node: VariableDeclNode): void {
-    const keyword = node.isFinal ? 'const' : 'let';
+    const keyword = node.isFinal ? "const" : "let";
     let line = `${keyword} ${node.name}`;
     if (node.value) {
       line += ` = ${this.generateExpression(node.value)}`;
     }
-    this.write(line + ';');
+    this.write(line + ";");
   }
 
   private visitAssignment(node: AssignmentNode): void {
     const line = `${node.name} = ${this.generateExpression(node.value)}`;
-    this.write(line + ';');
+    this.write(line + ";");
   }
 
   private visitIf(node: IfNode): void {
     this.write(`if (${this.generateExpression(node.condition)}) {`);
     this.indent++;
-    node.thenBranch.forEach(stmt => this.visitStatement(stmt));
+    node.thenBranch.forEach((stmt) => this.visitStatement(stmt));
     this.indent--;
-    this.write('}');
+    this.write("}");
 
     if (node.elseBranch) {
-      this.write('else {');
+      this.write("else {");
       this.indent++;
-      node.elseBranch.forEach(stmt => this.visitStatement(stmt));
+      node.elseBranch.forEach((stmt) => this.visitStatement(stmt));
       this.indent--;
-      this.write('}');
+      this.write("}");
     }
   }
 
   private visitWhile(node: WhileNode): void {
     this.write(`while (${this.generateExpression(node.condition)}) {`);
     this.indent++;
-    node.body.forEach(stmt => this.visitStatement(stmt));
+    node.body.forEach((stmt) => this.visitStatement(stmt));
     this.indent--;
-    this.write('}');
+    this.write("}");
   }
 
   private visitFor(node: ForNode): void {
-    let initStr = '';
+    let initStr = "";
     if (node.init) {
-      if (node.init.type === 'VARIABLE_DECL') {
-        const keyword = node.init.isFinal ? 'const' : 'let';
+      if (node.init.type === "VARIABLE_DECL") {
+        const keyword = node.init.isFinal ? "const" : "let";
         initStr = `${keyword} ${node.init.name}`;
         if (node.init.value) {
           initStr += ` = ${this.generateExpression(node.init.value)}`;
@@ -1100,21 +1316,21 @@ export class CodeGenerator {
       }
     }
 
-    let conditionStr = '';
+    let conditionStr = "";
     if (node.condition) {
       conditionStr = this.generateExpression(node.condition);
     }
 
-    let updateStr = '';
+    let updateStr = "";
     if (node.update) {
       updateStr = this.generateExpression(node.update);
     }
 
     this.write(`for (${initStr}; ${conditionStr}; ${updateStr}) {`);
     this.indent++;
-    node.body.forEach(stmt => this.visitStatement(stmt));
+    node.body.forEach((stmt) => this.visitStatement(stmt));
     this.indent--;
-    this.write('}');
+    this.write("}");
   }
 
   private visitPrint(node: PrintNode): void {
@@ -1126,7 +1342,7 @@ export class CodeGenerator {
     if (node.value) {
       this.write(`return ${this.generateExpression(node.value)};`);
     } else {
-      this.write('return;');
+      this.write("return;");
     }
   }
 
@@ -1136,47 +1352,49 @@ export class CodeGenerator {
 
   private generateExpression(node: ExpressionNode): string {
     switch (node.type) {
-      case 'LITERAL': {
+      case "LITERAL": {
         const val = node.value;
-        if (val === 'true' || val === 'false') {
+        if (val === "true" || val === "false") {
           return val;
         }
         if (val !== undefined && /^[0-9.]+$/.test(val)) {
           return val;
         }
-        return `"${val || ''}"`;
+        return `"${val || ""}"`;
       }
 
-      case 'IDENTIFIER':
-        return node.name || '';
+      case "IDENTIFIER":
+        return node.name || "";
 
-      case 'BINARY_EXPR': {
+      case "BINARY_EXPR": {
         const left = this.generateExpression(node.left!);
         const right = this.generateExpression(node.right!);
         return `(${left} ${node.operator} ${right})`;
       }
 
-      case 'UNARY_EXPR': {
+      case "UNARY_EXPR": {
         const operand = this.generateExpression(node.right!);
         return `${node.operator}${operand}`;
       }
 
-      case 'METHOD_CALL': {
-        const args = node.args?.map(arg => this.generateExpression(arg)).join(', ') || '';
-        if (node.name === 'System.out.println') {
+      case "METHOD_CALL": {
+        const args =
+          node.args?.map((arg) => this.generateExpression(arg)).join(", ") ||
+          "";
+        if (node.name === "System.out.println") {
           return `console.log(${args})`;
         }
         return `${node.name}(${args})`;
       }
 
       default:
-        return '';
+        return "";
     }
   }
 
   private write(line: string): void {
     if (line.trim()) {
-      this.code.push('  '.repeat(this.indent) + line);
+      this.code.push("  ".repeat(this.indent) + line);
     }
   }
 }
@@ -1195,13 +1413,16 @@ export class JavaCompiler {
 
       return { jsCode };
     } catch (error) {
-      return { jsCode: '', error: error instanceof Error ? error.message : String(error) };
+      return {
+        jsCode: "",
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
   static execute(javaCode: string): string {
     const { jsCode, error } = this.compile(javaCode);
-    
+
     if (error) {
       return `编译错误: ${error}`;
     }
@@ -1209,7 +1430,7 @@ export class JavaCompiler {
     const outputs: string[] = [];
     const originalLog = console.log;
     console.log = (...args: unknown[]) => {
-      outputs.push(args.map(arg => String(arg)).join(' '));
+      outputs.push(args.map((arg) => String(arg)).join(" "));
     };
 
     try {
@@ -1218,10 +1439,10 @@ export class JavaCompiler {
       console.log = originalLog;
 
       if (outputs.length === 0) {
-        return '程序执行成功，但没有输出。\n\n提示：使用 System.out.println() 输出内容';
+        return "程序执行成功，但没有输出。\n\n提示：使用 System.out.println() 输出内容";
       }
 
-      return outputs.join('\n') + '\n\n程序执行成功！';
+      return outputs.join("\n") + "\n\n程序执行成功！";
     } catch (execError) {
       console.log = originalLog;
       return `执行错误: ${execError instanceof Error ? execError.message : String(execError)}`;
