@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { marked } from "marked";
-import {
-  ArrowLeft,
-  Notebook,
-  DataBoard,
-  Files,
-  VideoPlay,
-  Refresh,
-  DocumentCopy,
-  Check,
-} from "@element-plus/icons-vue";
+import { ArrowLeft, Notebook, DataBoard, Files } from "@element-plus/icons-vue";
 import { getDayById, getCurrentStage } from "@/data/plan";
 import type { Day } from "@/data/plan";
-import { JavaCompiler } from "@/compiler/JavaCompiler";
 
 // 导入所有 markdown 文件
-const markdownModules = import.meta.glob('@/data/md/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const markdownModules = import.meta.glob("@/data/md/*.md", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
 
 const props = defineProps<{
   day: number;
@@ -28,53 +22,16 @@ const emit = defineEmits<{
 const day = computed<Day | undefined>(() => getDayById(props.day));
 const stageData = computed(() => getCurrentStage(props.day));
 
-// 获取当前 day 的 markdown 内容
 const markdownContent = computed(() => {
-  const dayId = String(props.day).padStart(2, '0');
-  const key = `/Users/ngtao/projects/java/src/data/md/Day${dayId}-*.md`;
-  
-  // 查找匹配的文件
+  const dayId = String(props.day).padStart(2, "0");
   for (const [path, content] of Object.entries(markdownModules)) {
-    const fileName = path.split('/').pop() || '';
+    const fileName = path.split("/").pop() || "";
     if (fileName.startsWith(`Day${dayId}-`)) {
       return marked(content) as string;
     }
   }
-  return '<p>暂无内容</p>';
+  return "<p>暂无内容</p>";
 });
-const copied = ref(false);
-const codeOutput = ref("");
-const codeExecuting = ref(false);
-const javaContent = ref(`public class HelloWorld {
- public static void main(String[] args) {
- System.out.println("Hello, Spring Boot!");
- }
-}`);
-const copyCode = () => {
-  navigator.clipboard.writeText(javaContent.value);
-  copied.value = true;
-  setTimeout(() => (copied.value = false), 2000);
-};
-const runCode = () => {
-  codeExecuting.value = true;
-  setTimeout(() => {
-    try {
-      const output = JavaCompiler.execute(javaContent.value);
-      codeOutput.value = output;
-    } catch (error) {
-      codeOutput.value = `执行错误: ${error instanceof Error ? error.message : String(error)}`;
-    }
-    codeExecuting.value = false;
-  }, 800);
-};
-const resetCode = () => {
-  javaContent.value = `public class HelloWorld {
- public static void main(String[] args) {
- System.out.println("Hello, Spring Boot!");
- }
-}`;
-  codeOutput.value = "";
-};
 </script>
 
 <template>
@@ -299,7 +256,7 @@ const resetCode = () => {
   color: #7c3aed;
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: 'Fira Code', 'Consolas', monospace;
+  font-family: "Fira Code", "Consolas", monospace;
   font-size: 14px;
 }
 

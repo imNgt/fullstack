@@ -28,7 +28,7 @@ const mdFiles = import.meta.glob('./md/Day*.md', { eager: true })
 const days: Day[] = []
 
 // 解析文件名获取天数和标题
-for (const [path, module] of Object.entries(mdFiles)) {
+for (const [path] of Object.entries(mdFiles)) {
   // 匹配 DayXX-标题.md
   const match = path.match(/Day(\d+)-(.*)\.md/)
   if (match) {
