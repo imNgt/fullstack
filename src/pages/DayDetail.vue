@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { marked } from "marked";
 import {
   ArrowLeft,
   Notebook,
@@ -13,14 +14,34 @@ import {
 import { getDayById, getCurrentStage } from "@/data/plan";
 import type { Day } from "@/data/plan";
 import { JavaCompiler } from "@/compiler/JavaCompiler";
+
+// 导入所有 markdown 文件
+const markdownModules = import.meta.glob('@/data/md/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+
 const props = defineProps<{
   day: number;
 }>();
 const emit = defineEmits<{
   (e: "back"): void;
 }>();
+
 const day = computed<Day | undefined>(() => getDayById(props.day));
 const stageData = computed(() => getCurrentStage(props.day));
+
+// 获取当前 day 的 markdown 内容
+const markdownContent = computed(() => {
+  const dayId = String(props.day).padStart(2, '0');
+  const key = `/Users/ngtao/projects/java/src/data/md/Day${dayId}-*.md`;
+  
+  // 查找匹配的文件
+  for (const [path, content] of Object.entries(markdownModules)) {
+    const fileName = path.split('/').pop() || '';
+    if (fileName.startsWith(`Day${dayId}-`)) {
+      return marked(content) as string;
+    }
+  }
+  return '<p>暂无内容</p>';
+});
 const copied = ref(false);
 const codeOutput = ref("");
 const codeExecuting = ref(false);
@@ -89,66 +110,8 @@ const resetCode = () => {
       </button>
     </div>
 
-    <!-- Java 补充内容 -->
-    <div class="content-section">
-      <h2>📚 Java 补充（40 分钟）</h2>
-      <p class="topic-desc">今日学习：{{ day?.javaTopic }}</p>
-
-      <div class="knowledge-card">
-        <h3>1. 核心知识点</h3>
-        <p>
-          今天我们学习 <strong>JDK 安装配置</strong> 和
-          <strong>Maven 基础</strong>。
-        </p>
-        <ul>
-          <li>
-            <strong>JDK（Java Development Kit）</strong>：Java
-            开发工具包，包含编译器、运行时环境和工具
-          </li>
-          <li><strong>Maven</strong>：项目构建工具，管理依赖和构建生命周期</li>
-          <li><strong>pom.xml</strong>：Maven 项目的核心配置文件</li>
-          <li>
-            <strong>@Override 注解</strong>：标记方法重写，编译器会检查方法签名
-          </li>
-        </ul>
-      </div>
-
-      <div class="knowledge-card">
-        <h3>2. 代码示例</h3>
-        <div class="code-container">
-          <div class="code-header">
-            <span class="code-lang">Java</span>
-            <div class="code-actions">
-              <button class="code-action-btn" @click="copyCode">
-                <component
-                  :is="copied ? Check : DocumentCopy"
-                  class="action-icon"
-                />
-                <span>{{ copied ? "已复制" : "复制" }}</span>
-              </button>
-              <button class="code-action-btn" @click="resetCode">
-                <Refresh class="action-icon" />
-                <span>重置</span>
-              </button>
-            </div>
-          </div>
-          <textarea class="code-editor" v-model="javaContent"></textarea>
-          <button class="run-btn" :disabled="codeExecuting" @click="runCode">
-            <VideoPlay class="run-icon" />
-            <span>{{ codeExecuting ? "执行中..." : "运行代码" }}</span>
-          </button>
-          <div v-if="codeOutput" class="output-panel">
-            <h4>输出结果：</h4>
-            <pre class="output-content">{{ codeOutput }}</pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="knowledge-card">
-        <h3>3. 小练习</h3>
-        <p>请修改代码，让程序输出你的名字！</p>
-      </div>
-    </div>
+    <!-- Markdown 内容 -->
+    <div class="markdown-content" v-html="markdownContent"></div>
   </div>
 </template>
 
@@ -266,7 +229,7 @@ const resetCode = () => {
   height: 20px;
 }
 
-.content-section {
+.markdown-content {
   background: white;
   border-radius: 20px;
   padding: 28px;
@@ -274,56 +237,101 @@ const resetCode = () => {
   border: 1px solid #f0f0f0;
 }
 
-.content-section h2 {
+.markdown-content :deep(h1) {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.markdown-content :deep(h2) {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 20px;
   color: #1f2937;
+  margin-top: 28px;
+  margin-bottom: 16px;
 }
 
-.topic-desc {
-  color: #6b7280;
-  margin-bottom: 28px;
-  font-size: 15px;
-  line-height: 1.7;
+.markdown-content :deep(h3) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 20px;
+  margin-bottom: 12px;
 }
 
-.knowledge-card {
-  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  border-left: 4px solid #8b5cf6;
-  transition: all 0.3s;
-}
-
-.knowledge-card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.knowledge-card h3 {
-  font-size: 17px;
-  font-weight: 700;
-  margin-bottom: 14px;
-  color: #1f2937;
-}
-
-.knowledge-card p {
+.markdown-content :deep(h4) {
+  font-size: 16px;
+  font-weight: 600;
   color: #4b5563;
-  line-height: 1.7;
-  margin-bottom: 14px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.markdown-content :deep(p) {
+  color: #4b5563;
+  margin-bottom: 16px;
+  line-height: 1.8;
   font-size: 15px;
 }
 
-.knowledge-card ul {
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+  margin-bottom: 16px;
   padding-left: 24px;
+  color: #4b5563;
 }
 
-.knowledge-card li {
-  color: #4b5563;
-  margin-bottom: 10px;
+.markdown-content :deep(li) {
+  margin-bottom: 8px;
+  line-height: 1.7;
+}
+
+.markdown-content :deep(strong) {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.markdown-content :deep(code) {
+  background: #f3f4f6;
+  color: #7c3aed;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 14px;
+}
+
+.markdown-content :deep(pre) {
+  background: #1f2937;
+  color: #e5e7eb;
+  padding: 20px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.markdown-content :deep(pre code) {
+  background: transparent;
+  color: inherit;
+  padding: 0;
   font-size: 14px;
   line-height: 1.6;
+}
+
+.markdown-content :deep(hr) {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 24px 0;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 4px solid #8b5cf6;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #6b7280;
+  font-style: italic;
 }
 
 .code-container {
