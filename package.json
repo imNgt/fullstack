@@ -10,10 +10,13 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.7.2",
+    "highlight.js": "^11.11.1",
     "marked": "^18.0.5",
+    "marked-highlight": "^2.2.4",
     "vue": "^3.4.21"
   },
   "devDependencies": {
+    "@types/node": "^25.9.3",
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.4.5",
     "vite": "^5.2.0",

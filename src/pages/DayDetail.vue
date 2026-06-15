@@ -1,11 +1,36 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js/lib/core";
+import java from "highlight.js/lib/languages/java";
+import xml from "highlight.js/lib/languages/xml";
+import "highlight.js/styles/atom-one-dark.css";
 import { ArrowLeft, Notebook, DataBoard, Files } from "@element-plus/icons-vue";
 import { getDayById, getCurrentStage } from "@/data/plan";
 import type { Day } from "@/data/plan";
 
-// 导入所有 markdown 文件
+hljs.registerLanguage("java", java);
+hljs.registerLanguage("xml", xml);
+hljs.registerLanguage("html", xml);
+
+marked.use(
+  markedHighlight({
+    langPrefix: "hljs language-",
+    highlight(code: string, lang: string) {
+      if (lang && hljs.getLanguage(lang)) {
+        return hljs.highlight(code, { language: lang }).value;
+      }
+      return hljs.highlightAuto(code).value;
+    }
+  })
+);
+
+marked.setOptions({
+  breaks: true,
+  gfm: true
+});
+
 const markdownModules = import.meta.glob("@/data/md/*.md", {
   query: "?raw",
   import: "default",
@@ -31,6 +56,45 @@ const markdownContent = computed(() => {
     }
   }
   return "<p>暂无内容</p>";
+});
+
+onMounted(() => {
+  const preElements = document.querySelectorAll("pre");
+  preElements.forEach((pre) => {
+    const code = pre.querySelector("code");
+    if (code) {
+      const codeContent = code.textContent || "";
+      const lang = code.className.replace("language-", "").replace("hljs ", "").replace("hljs", "") || "code";
+      
+      const header = document.createElement("div");
+      header.className = "code-header";
+      
+      const langSpan = document.createElement("span");
+      langSpan.className = "code-lang";
+      langSpan.textContent = lang.toUpperCase();
+      
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.innerHTML = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(codeContent).then(() => {
+          copyBtn.innerHTML = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+          copyBtn.classList.add("copied");
+          setTimeout(() => {
+            copyBtn.innerHTML = '<svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+            copyBtn.classList.remove("copied");
+          }, 2000);
+        }).catch(err => {
+          console.error("复制失败:", err);
+        });
+      });
+      
+      header.appendChild(langSpan);
+      header.appendChild(copyBtn);
+      pre.parentNode?.insertBefore(header, pre);
+    }
+  });
 });
 </script>
 
@@ -261,12 +325,15 @@ const markdownContent = computed(() => {
 }
 
 .markdown-content :deep(pre) {
-  background: #1f2937;
-  color: #e5e7eb;
-  padding: 20px;
-  border-radius: 12px;
+  background: #0d1117;
+  color: #e6edf3;
+  padding: 16px 20px;
+  border-radius: 0 0 12px 12px;
   overflow-x: auto;
   margin-bottom: 20px;
+  margin-top: 0;
+  border: 1px solid #30363d;
+  border-top: none;
 }
 
 .markdown-content :deep(pre code) {
@@ -274,7 +341,135 @@ const markdownContent = computed(() => {
   color: inherit;
   padding: 0;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+}
+
+.markdown-content :deep(.hljs) {
+  background: transparent !important;
+  padding: 0;
+}
+
+.markdown-content :deep(.hljs-keyword) {
+  color: #ff7b72;
+}
+
+.markdown-content :deep(.hljs-string) {
+  color: #a5d6ff;
+}
+
+.markdown-content :deep(.hljs-comment) {
+  color: #8b949e;
+  font-style: italic;
+}
+
+.markdown-content :deep(.hljs-function) {
+  color: #d2a8ff;
+}
+
+.markdown-content :deep(.hljs-title) {
+  color: #d2a8ff;
+}
+
+.markdown-content :deep(.hljs-variable) {
+  color: #ffa657;
+}
+
+.markdown-content :deep(.hljs-attribute) {
+  color: #7ee787;
+}
+
+.markdown-content :deep(.hljs-number) {
+  color: #ffa657;
+}
+
+.markdown-content :deep(.hljs-built_in) {
+  color: #79c0ff;
+}
+
+.markdown-content :deep(.hljs-type) {
+  color: #79c0ff;
+}
+
+.markdown-content :deep(.hljs-tag) {
+  color: #ff7b72;
+}
+
+.markdown-content :deep(.hljs-name) {
+  color: #ff7b72;
+}
+
+.markdown-content :deep(.hljs-attr) {
+  color: #a5d6ff;
+}
+
+.markdown-content :deep(.hljs-string) {
+  color: #a5d6ff;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px 12px 0 0;
+  border-bottom: none;
+}
+
+.code-lang {
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: #30363d;
+  color: #e6edf3;
+  border-color: #8b949e;
+}
+
+.copy-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.copy-icon::before {
+  content: '';
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.copy-btn .copy-icon::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+}
+
+.copy-btn.copied .copy-icon::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
 }
 
 .markdown-content :deep(hr) {
