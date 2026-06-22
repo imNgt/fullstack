@@ -49,7 +49,10 @@ const days: Day[] = [];
 
 // 解析文件名获取天数和标题
 for (const [path] of Object.entries(mdFiles)) {
-  // 匹配 DayXX-标题.md
+  // 匹配 DayXX-标题.md，排除 -java.md 文件
+  if (path.endsWith("-java.md")) {
+    continue;
+  }
   const match = path.match(/Day(\d+)-(.*)\.md/);
   if (match) {
     const id = parseInt(match[1]);
