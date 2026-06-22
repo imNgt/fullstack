@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js/lib/core";
 import java from "highlight.js/lib/languages/java";
 import xml from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/github-dark.css";
-import { ArrowLeft, Notebook, DataBoard, Files } from "@element-plus/icons-vue";
+import { ArrowLeft, Notebook, Cpu } from "@element-plus/icons-vue";
 import { getDayById, getCurrentStage } from "@/data/plan";
 import type { Day } from "@/data/plan";
 
@@ -44,23 +44,50 @@ const emit = defineEmits<{
   (e: "back"): void;
 }>();
 
+const activeTab = ref<"java" | "spring">("java");
+
 const day = computed<Day | undefined>(() => getDayById(props.day));
 const stageData = computed(() => getCurrentStage(props.day));
 
-const markdownContent = computed(() => {
+const currentMarkdownContent = computed(() => {
   const dayId = String(props.day).padStart(2, "0");
+  const fileName =
+    activeTab.value === "java" ? `Day${dayId}-java.md` : `Day${dayId}-`;
+
   for (const [path, content] of Object.entries(markdownModules)) {
-    const fileName = path.split("/").pop() || "";
-    if (fileName.startsWith(`Day${dayId}-`)) {
-      return marked(content) as string;
+    const file = path.split("/").pop() || "";
+    if (activeTab.value === "java") {
+      if (file === fileName) {
+        return marked(content) as string;
+      }
+    } else {
+      if (file.startsWith(fileName) && !file.endsWith("-java.md")) {
+        return marked(content) as string;
+      }
     }
   }
   return "<p>暂无内容</p>";
 });
 
-onMounted(() => {
+const hasJavaContent = computed(() => {
+  const dayId = String(props.day).padStart(2, "0");
+  for (const path of Object.keys(markdownModules)) {
+    const fileName = path.split("/").pop() || "";
+    if (fileName === `Day${dayId}-java.md`) {
+      return true;
+    }
+  }
+  return false;
+});
+
+const setupCodeCopy = () => {
   const preElements = document.querySelectorAll("pre");
   preElements.forEach((pre) => {
+    // 如果已经有 header，跳过
+    if (pre.previousElementSibling?.classList.contains("code-header")) {
+      return;
+    }
+
     const code = pre.querySelector("code");
     if (code) {
       const codeContent = code.textContent || "";
@@ -105,6 +132,12 @@ onMounted(() => {
       pre.parentNode?.insertBefore(header, pre);
     }
   });
+};
+
+onMounted(setupCodeCopy);
+
+watch([currentMarkdownContent, activeTab], () => {
+  setTimeout(setupCodeCopy, 100);
 });
 </script>
 
@@ -124,21 +157,26 @@ onMounted(() => {
     </div>
 
     <div class="content-tabs">
-      <button class="tab-btn active">
+      <button
+        v-if="hasJavaContent"
+        class="tab-btn"
+        :class="{ active: activeTab === 'java' }"
+        @click="activeTab = 'java'"
+      >
         <Notebook class="tab-icon" />
-        <span>Java 补充</span>
+        <span>Java 知识</span>
       </button>
-      <button class="tab-btn">
-        <DataBoard class="tab-icon" />
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'spring' }"
+        @click="activeTab = 'spring'"
+      >
+        <Cpu class="tab-icon" />
         <span>Spring 实战</span>
-      </button>
-      <button class="tab-btn">
-        <Files class="tab-icon" />
-        <span>今日笔记</span>
       </button>
     </div>
 
-    <div class="markdown-content" v-html="markdownContent"></div>
+    <div class="markdown-content" v-html="currentMarkdownContent"></div>
   </div>
 </template>
 
@@ -366,85 +404,88 @@ onMounted(() => {
   margin: 24px 0;
 }
 
-.markdown-content :deep(blockquote) {
-  border-left: 4px solid #d0d7de;
-  padding-left: 16px;
-  margin: 16px 0;
-  color: #57606a;
-  font-style: normal;
-  background: #f6f8fa;
-  padding: 16px;
-  border-radius: 0 6px 6px 0;
-}
-
 .markdown-content :deep(table) {
   width: 100%;
-  margin-bottom: 16px;
   border-collapse: collapse;
+  margin-bottom: 16px;
   font-size: 14px;
 }
 
-.markdown-content :deep(th),
-.markdown-content :deep(td) {
-  padding: 6px 13px;
-  border: 1px solid #d0d7de;
-}
-
 .markdown-content :deep(th) {
+  text-align: left;
+  padding: 8px 12px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
   font-weight: 600;
+  color: #24292f;
+}
+
+.markdown-content :deep(td) {
+  padding: 8px 12px;
+  border: 1px solid #d0d7de;
+  color: #24292f;
+}
+
+.markdown-content :deep(tr:hover) {
   background: #f6f8fa;
 }
 
-.markdown-content :deep(tr:nth-child(2n)) {
-  background: #f6f8fa;
+.markdown-content :deep(blockquote) {
+  padding: 12px 16px;
+  margin: 16px 0;
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+  border-radius: 0 6px 6px 0;
+  color: #92400e;
+  font-style: italic;
+}
+
+.markdown-content :deep(a) {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.markdown-content :deep(a:hover) {
+  text-decoration: underline;
 }
 
 .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
-  background: #161b22;
-  border: 1px solid #30363d;
+  padding: 8px 12px;
+  background: #0d1117;
   border-radius: 6px 6px 0 0;
-  border-bottom: none;
+  border-bottom: 1px solid #30363d;
 }
 
 .code-lang {
-  color: #8b949e;
   font-size: 12px;
+  color: #8b949e;
   font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .copy-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  background: #21262d;
-  border: 1px solid #30363d;
-  border-radius: 4px;
-  color: #8b949e;
-  font-size: 12px;
+  background: transparent;
+  border: none;
   cursor: pointer;
+  color: #8b949e;
+  padding: 4px;
+  border-radius: 4px;
   transition: all 0.2s ease;
 }
 
 .copy-btn:hover {
-  background: #30363d;
+  background: rgba(240, 246, 252, 0.1);
   color: #c9d1d9;
-  border-color: #8b949e;
-}
-
-.copy-icon {
-  width: 14px;
-  height: 14px;
 }
 
 .copy-btn.copied {
   color: #3fb950;
-  border-color: #3fb950;
+}
+
+.copy-icon {
+  width: 16px;
+  height: 16px;
 }
 </style>

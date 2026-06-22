@@ -1,39 +1,5 @@
 # Day 02：包结构 + 依赖注入 + 反射原理
 
-### 📚 Java 补充（30 分钟）
-
-#### 1. 包结构规范
-
-```
-src/main/java/com/example/demo
-├── controller/      # REST API 控制层
-├── service/         # 业务逻辑层
-├── repository/      # 数据访问层（DAO）
-├── entity/          # 数据库实体
-├── dto/             # 数据传输对象
-├── config/          # 配置类
-└── DemoApplication.java  # 启动类
-```
-
-#### 2. 反射基础
-
-```java
-// 获取 Class 对象的三种方式
-Class<?> clazz1 = User.class;
-Class<?> clazz2 = userInstance.getClass();
-Class<?> clazz3 = Class.forName("com.example.entity.User");
-
-// 获取构造器
-Constructor<?> constructor = clazz.getConstructor(String.class);
-Object instance = constructor.newInstance("张三");
-
-// 获取方法并调用
-Method method = clazz.getMethod("getName");
-String name = (String) method.invoke(instance);
-```
-
----
-
 ### 💻 Spring 实战（1.5 小时）
 
 #### 任务 1：创建 User 模型类
