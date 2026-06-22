@@ -86,13 +86,13 @@ body {
 .main-content {
   flex: 1;
   display: flex;
-  margin-top: 60px;
+  margin-top: 64px;
 }
 
 .content-area {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  min-height: calc(100vh - 60px);
+  height: calc(100vh - 64px);
 }
 </style>

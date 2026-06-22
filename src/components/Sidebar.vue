@@ -79,6 +79,9 @@ const getDaysByStage = (stageId: number) => {
   flex-direction: column;
   min-height: calc(100vh - 64px);
   box-shadow: 2px 0 20px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
 }
 
 .sidebar-header {
