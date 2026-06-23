@@ -82,6 +82,29 @@ const hasJavaContent = computed(() => {
 
 const setupCodeCopy = () => {
   const preElements = document.querySelectorAll("pre");
+  let codeBlockIndex = 0;
+
+  // 语言到默认文件名的映射
+  const langToFilename: Record<string, string> = {
+    java: "Main.java",
+    javascript: "index.js",
+    js: "index.js",
+    typescript: "index.ts",
+    ts: "index.ts",
+    python: "main.py",
+    py: "main.py",
+    html: "index.html",
+    css: "style.css",
+    sql: "query.sql",
+    xml: "config.xml",
+    json: "config.json",
+    yaml: "config.yaml",
+    yml: "config.yaml",
+    shell: "script.sh",
+    bash: "script.sh",
+    console: "output.txt",
+  };
+
   preElements.forEach((pre) => {
     // 如果已经有 header，跳过
     if (pre.previousElementSibling?.classList.contains("code-header")) {
@@ -90,6 +113,7 @@ const setupCodeCopy = () => {
 
     const code = pre.querySelector("code");
     if (code) {
+      codeBlockIndex++;
       const codeContent = code.textContent || "";
       const lang =
         code.className
@@ -97,8 +121,28 @@ const setupCodeCopy = () => {
           .replace("hljs ", "")
           .replace("hljs", "") || "code";
 
+      // 生成文件名
+      const defaultFilename =
+        langToFilename[lang.toLowerCase()] || `example${codeBlockIndex}.txt`;
+
+      // 尝试从代码内容中提取类名作为文件名（Java）
+      let filename = defaultFilename;
+      if (lang.toLowerCase() === "java") {
+        const classMatch = codeContent.match(/public\s+class\s+(\w+)/);
+        if (classMatch) {
+          filename = `${classMatch[1]}.java`;
+        }
+      }
+
       const header = document.createElement("div");
       header.className = "code-header";
+
+      const headerLeft = document.createElement("div");
+      headerLeft.className = "code-header-left";
+
+      const filenameSpan = document.createElement("span");
+      filenameSpan.className = "code-filename";
+      filenameSpan.textContent = filename;
 
       const langSpan = document.createElement("span");
       langSpan.className = "code-lang";
@@ -127,7 +171,9 @@ const setupCodeCopy = () => {
           });
       });
 
-      header.appendChild(langSpan);
+      headerLeft.appendChild(filenameSpan);
+      headerLeft.appendChild(langSpan);
+      header.appendChild(headerLeft);
       header.appendChild(copyBtn);
       pre.parentNode?.insertBefore(header, pre);
     }
@@ -180,14 +226,14 @@ watch([currentMarkdownContent, activeTab], () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .day-detail {
   max-width: 980px;
   margin: 0 auto;
   padding: 40px 24px;
 }
 
-.back-btn {
+.day-detail .back-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -203,28 +249,28 @@ watch([currentMarkdownContent, activeTab], () => {
   margin-bottom: 24px;
 }
 
-.back-btn:hover {
+.day-detail .back-btn:hover {
   background: #f6f8fa;
   border-color: #1f6feb;
   color: #0969da;
 }
 
-.back-icon {
+.day-detail .back-icon {
   width: 16px;
   height: 16px;
 }
 
-.day-header {
+.day-detail .day-header {
   margin-bottom: 24px;
 }
 
-.day-info {
+.day-detail .day-info {
   display: flex;
   gap: 8px;
   margin-bottom: 12px;
 }
 
-.day-badge {
+.day-detail .day-badge {
   background: #0969da;
   color: white;
   padding: 4px 12px;
@@ -233,7 +279,7 @@ watch([currentMarkdownContent, activeTab], () => {
   font-weight: 600;
 }
 
-.stage-label {
+.day-detail .stage-label {
   background: #f3f4f6;
   color: #374151;
   padding: 4px 12px;
@@ -242,14 +288,14 @@ watch([currentMarkdownContent, activeTab], () => {
   font-weight: 500;
 }
 
-.day-header h1 {
+.day-detail .day-header h1 {
   font-size: 24px;
   font-weight: 600;
   color: #1f2937;
   margin: 0;
 }
 
-.content-tabs {
+.day-detail .content-tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 24px;
@@ -257,7 +303,7 @@ watch([currentMarkdownContent, activeTab], () => {
   border-bottom: 1px solid #d0d7de;
 }
 
-.tab-btn {
+.day-detail .tab-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -272,12 +318,12 @@ watch([currentMarkdownContent, activeTab], () => {
   transition: all 0.2s ease;
 }
 
-.tab-btn:hover {
+.day-detail .tab-btn:hover {
   background: #f6f8fa;
   color: #24292f;
 }
 
-.tab-btn.active {
+.day-detail .tab-btn.active {
   background: transparent;
   color: #24292f;
   font-weight: 600;
@@ -285,19 +331,19 @@ watch([currentMarkdownContent, activeTab], () => {
   border-radius: 0;
 }
 
-.tab-icon {
+.day-detail .tab-icon {
   width: 16px;
   height: 16px;
 }
 
-.markdown-content {
+.day-detail .markdown-content {
   background: white;
   border-radius: 6px;
   padding: 32px;
   border: 1px solid #d0d7de;
 }
 
-.markdown-content :deep(h1) {
+.day-detail .markdown-content h1 {
   font-size: 1.75em;
   font-weight: 600;
   color: #1f2937;
@@ -306,7 +352,7 @@ watch([currentMarkdownContent, activeTab], () => {
   border-bottom: 1px solid #d0d7de;
 }
 
-.markdown-content :deep(h2) {
+.day-detail .markdown-content h2 {
   font-size: 1.5em;
   font-weight: 600;
   color: #1f2937;
@@ -314,7 +360,7 @@ watch([currentMarkdownContent, activeTab], () => {
   margin-bottom: 16px;
 }
 
-.markdown-content :deep(h3) {
+.day-detail .markdown-content h3 {
   font-size: 1.25em;
   font-weight: 600;
   color: #24292f;
@@ -322,7 +368,7 @@ watch([currentMarkdownContent, activeTab], () => {
   margin-bottom: 8px;
 }
 
-.markdown-content :deep(h4) {
+.day-detail .markdown-content h4 {
   font-size: 1.125em;
   font-weight: 600;
   color: #24292f;
@@ -330,7 +376,7 @@ watch([currentMarkdownContent, activeTab], () => {
   margin-bottom: 8px;
 }
 
-.markdown-content :deep(h5) {
+.day-detail .markdown-content h5 {
   font-size: 1em;
   font-weight: 600;
   color: #24292f;
@@ -338,31 +384,31 @@ watch([currentMarkdownContent, activeTab], () => {
   margin-bottom: 8px;
 }
 
-.markdown-content :deep(p) {
+.day-detail .markdown-content p {
   color: #24292f;
   margin-bottom: 16px;
   line-height: 1.6;
   font-size: 14px;
 }
 
-.markdown-content :deep(ul),
-.markdown-content :deep(ol) {
+.day-detail .markdown-content ul,
+.day-detail .markdown-content ol {
   margin-bottom: 16px;
   padding-left: 24px;
   color: #24292f;
 }
 
-.markdown-content :deep(li) {
+.day-detail .markdown-content li {
   margin-bottom: 8px;
   line-height: 1.6;
 }
 
-.markdown-content :deep(strong) {
+.day-detail .markdown-content strong {
   color: #1f2937;
   font-weight: 600;
 }
 
-.markdown-content :deep(code) {
+.day-detail .markdown-content code {
   background: rgba(175, 184, 193, 0.2);
   color: #1f2937;
   padding: 0.2em 0.4em;
@@ -372,46 +418,45 @@ watch([currentMarkdownContent, activeTab], () => {
   font-size: 85%;
 }
 
-.markdown-content :deep(pre) {
+.day-detail .markdown-content pre {
   background: #161b22;
   color: #c9d1d9;
   padding: 16px;
-  border-radius: 6px;
+  border-radius: 0 0 6px 6px;
   overflow-x: auto;
   margin-bottom: 16px;
-  margin-top: 8px;
   border: 1px solid #30363d;
 }
 
-.markdown-content :deep(pre code) {
+.day-detail .markdown-content pre code {
   background: transparent;
   color: inherit;
   padding: 0;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   font-family:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
-.markdown-content :deep(.hljs) {
+.day-detail .markdown-content .hljs {
   background: transparent !important;
   padding: 0;
 }
 
-.markdown-content :deep(hr) {
+.day-detail .markdown-content hr {
   border: none;
   border-top: 1px solid #d0d7de;
   margin: 24px 0;
 }
 
-.markdown-content :deep(table) {
+.day-detail .markdown-content table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 16px;
   font-size: 14px;
 }
 
-.markdown-content :deep(th) {
+.day-detail .markdown-content th {
   text-align: left;
   padding: 8px 12px;
   background: #f6f8fa;
@@ -420,17 +465,17 @@ watch([currentMarkdownContent, activeTab], () => {
   color: #24292f;
 }
 
-.markdown-content :deep(td) {
+.day-detail .markdown-content td {
   padding: 8px 12px;
   border: 1px solid #d0d7de;
   color: #24292f;
 }
 
-.markdown-content :deep(tr:hover) {
+.day-detail .markdown-content tr:hover {
   background: #f6f8fa;
 }
 
-.markdown-content :deep(blockquote) {
+.day-detail .markdown-content blockquote {
   padding: 12px 16px;
   margin: 16px 0;
   background: #fffbeb;
@@ -440,51 +485,85 @@ watch([currentMarkdownContent, activeTab], () => {
   font-style: italic;
 }
 
-.markdown-content :deep(a) {
+.day-detail .markdown-content a {
   color: #0969da;
   text-decoration: none;
 }
 
-.markdown-content :deep(a:hover) {
+.day-detail .markdown-content a:hover {
   text-decoration: underline;
 }
 
-.code-header {
+.day-detail .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 6px 12px;
   background: #0d1117;
   border-radius: 6px 6px 0 0;
   border-bottom: 1px solid #30363d;
+  min-height: 36px;
+  box-sizing: border-box;
 }
 
-.code-lang {
+.day-detail .code-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.day-detail .code-filename {
   font-size: 12px;
+  color: #c9d1d9;
+  font-weight: 500;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-detail .code-filename::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3fb950;
+}
+
+.day-detail .code-lang {
+  font-size: 11px;
   color: #8b949e;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.copy-btn {
+.day-detail .copy-btn {
   background: transparent;
   border: none;
   cursor: pointer;
   color: #8b949e;
-  padding: 4px;
+  padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.2s ease;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.copy-btn:hover {
+.day-detail .copy-btn:hover {
   background: rgba(240, 246, 252, 0.1);
   color: #c9d1d9;
 }
 
-.copy-btn.copied {
+.day-detail .copy-btn.copied {
   color: #3fb950;
 }
 
-.copy-icon {
+.day-detail .copy-icon {
   width: 16px;
   height: 16px;
 }
